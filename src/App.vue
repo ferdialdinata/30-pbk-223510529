@@ -150,8 +150,10 @@ nav ul li:hover {
 
 /* Main container */
 .container {
-  display: flex;
-  justify-content: center;
+  display: center;
+  position: center;
+  width: 500px;
+  height: 500px;
   align-items: center;
   margin-top: 70px;
   padding: 20px;
