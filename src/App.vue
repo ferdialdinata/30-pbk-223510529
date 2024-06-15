@@ -1,16 +1,23 @@
 <template>
-  <div class="background"></div>
   <div id="app">
+    <div class="background"></div>
     <!-- Header -->
     <header>
+      <!-- Navbar -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
           <ul class="navbar-nav mx-auto">
-            <li class="nav-item" @click="showTodos" :class="{ active: activeMenu === 'todos' }">
-              <a class="nav-link">Todos</a>
+            <!-- Link menu untuk Todos -->
+            <li class="nav-item" @click="goTo('/todos')" :class="{ active: activeMenu === 'todos' }">
+              <router-link to="/todos" class="nav-link">Todos</router-link>
             </li>
-            <li class="nav-item" @click="showPosts" :class="{ active: activeMenu === 'posts' }">
-              <a class="nav-link">Posts</a>
+            <!-- Link menu untuk Posts -->
+            <li class="nav-item" @click="goTo('/posts')" :class="{ active: activeMenu === 'posts' }">
+              <router-link to="/posts" class="nav-link">Posts</router-link>
+            </li>
+            <!-- Link menu untuk Albums -->
+            <li class="nav-item" @click="goTo('/albums')" :class="{ active: activeMenu === 'albums' }">
+              <router-link to="/albums" class="nav-link">Albums</router-link>
             </li>
           </ul>
         </div>
@@ -20,68 +27,46 @@
     <!-- Main Content -->
     <div class="container mt-5">
       <main>
-        <TodoList
-          v-if="activeMenu === 'todos'"
-          :todos="todos"
-          :hideCompleted="hideCompleted"
-          @add-todo="addTodo"
-          @remove-todo="removeTodo"
-          @toggle-hide-completed="toggleHideCompleted"
-        />
-        <PostList
-          v-else-if="activeMenu === 'posts'"
-          :users="users"
-        />
+        <!-- Router View untuk menampilkan komponen berdasarkan path -->
+        <router-view :todos="todos" :hideCompleted="hideCompleted"
+                     @add-todo="addTodo" @remove-todo="removeTodo" @toggle-hide-completed="toggleHideCompleted" />
       </main>
     </div>
   </div>
 </template>
 
 <script>
-import TodoList from './components/TodoList.vue';
-import PostList from './components/PostList.vue';
-
 export default {
   name: 'App',
-  components: {
-    TodoList,
-    PostList
-  },
   data() {
     return {
-      activeMenu: 'todos',
+      activeMenu: 'todos', // Menu aktif default
       hideCompleted: false,
       todos: [
         { id: 1, text: 'Belajar JavaScript', done: true },
         { id: 2, text: 'Belajar HTML', done: true },
         { id: 3, text: 'Belajar Desain', done: false }
-      ],
-      users: []
+      ]
     };
   },
   methods: {
-    showTodos() {
-      this.activeMenu = 'todos';
+    // Method untuk navigasi ke route tertentu
+    goTo(path) {
+      this.$router.push(path);
+      this.activeMenu = path.substring(1); // Mengupdate menu aktif berdasarkan path
     },
-    showPosts() {
-      this.activeMenu = 'posts';
+    // Method untuk menambahkan todo baru
+    addTodo(newTodo) {
+      this.todos.push(newTodo);
     },
-    addTodo(todo) {
-      this.todos.push(todo);
-    },
+    // Method untuk menghapus todo
     removeTodo(todo) {
       this.todos = this.todos.filter(t => t !== todo);
     },
+    // Method untuk toggle hide completed todos
     toggleHideCompleted() {
       this.hideCompleted = !this.hideCompleted;
     }
-  },
-  mounted() {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response => response.json())
-      .then(data => {
-        this.users = data;
-      });
   }
 };
 </script>

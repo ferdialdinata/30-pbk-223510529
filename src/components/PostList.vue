@@ -1,29 +1,28 @@
 <template>
-    <div class="postsDetail">
-      <h2>Postingan</h2>
-      <select v-model="selectedUser" class="form-control mt-3" @change="fetchUserPosts">
-        <option value="">Pilih pengguna...</option>
-        <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-      </select>
-    </div>
-  </template>
-  
-  <script>
-  import Swal from 'sweetalert2';
-  
-  export default {
-    name: 'PostList',
-    props: {
-      users: Array
-    },
-    data() {
-      return {
-        selectedUser: null
-      };
-    },
-    methods: {
-      fetchUserPosts() {
-        const selectedUser = this.selectedUser;
+  <div class="postsDetail">
+    <h2>Postingan</h2>
+    <select v-model="selectedUser" class="form-control mt-3" @change="fetchUserPosts">
+      <option value="">Pilih pengguna...</option>
+      <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+    </select>
+  </div>
+</template>
+
+<script>
+import Swal from 'sweetalert2';
+
+export default {
+  name: 'PostList',
+  data() {
+    return {
+      users: [],
+      selectedUser: null
+    };
+  },
+  methods: {
+    fetchUserPosts() {
+      const selectedUser = this.selectedUser;
+      if (selectedUser) {
         fetch(`https://jsonplaceholder.typicode.com/posts?userId=${selectedUser}`)
           .then(response => response.json())
           .then(data => {
@@ -37,29 +36,36 @@
               }
             });
           });
-      },
-      formatPosts(posts) {
-        let html = '<ul>';
-        posts.forEach(post => {
-          html += `<li><strong>${post.title}</strong><br>${post.body}</li>`;
-        });
-        html += '</ul>';
-        return html;
       }
+    },
+    formatPosts(posts) {
+      let html = '<ul>';
+      posts.forEach(post => {
+        html += `<li><strong>${post.title}</strong><br>${post.body}</li>`;
+      });
+      html += '</ul>';
+      return html;
     }
-  };
-  </script>
-  
-  <style scoped>
-  .postsDetail {
-    position: fixed;
-    top: 40%;
-    left: 43%;
+  },
+  mounted() {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(response => response.json())
+      .then(data => {
+        this.users = data;
+      });
   }
-  select {
-    margin-top: 10px;
-    padding: 5px;
-    border-radius: 5px;
-  }
-  </style>
-  
+};
+</script>
+
+<style scoped>
+.postsDetail {
+  position: fixed;
+  top: 40%;
+  left: 43%;
+}
+select {
+  margin-top: 10px;
+  padding: 5px;
+  border-radius: 5px;
+}
+</style>
